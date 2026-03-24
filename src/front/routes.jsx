@@ -8,7 +8,9 @@ import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { Signup } from "./pages/Signup.jsx";
-import { Login } from "./pages/Login.jsx"; // Importamos el componente de Login
+import { Login } from "./pages/Login.jsx";
+import { ForgotPassword } from "./pages/ForgotPassword.jsx"; // Importación para H-5
+import { ResetPassword } from "./pages/ResetPassword.jsx";   // Importación para H-6
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -19,8 +21,11 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         
         <Route path="/signup" element={<Signup />} />
-        {/* Nueva ruta para el inicio de sesión */}
         <Route path="/login" element={<Login />} />
+
+        {/* Nuevas rutas para la recuperación de contraseña */}
+        <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/reset" element={<ResetPassword />} />
 
       </Route>
     )

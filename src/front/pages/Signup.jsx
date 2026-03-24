@@ -13,8 +13,11 @@ export const Signup = () => {
         setError(null);
 
         try {
-            // Usamos import.meta.env para Vite
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            
+            // Log para verificar a dónde estamos enviando los datos
+            console.log("Enviando registro a:", `${backendUrl}/api/signup`);
+
             const response = await fetch(`${backendUrl}/api/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -28,11 +31,15 @@ export const Signup = () => {
             const data = await response.json();
 
             if (response.ok) {
+                console.log("Usuario creado exitosamente");
+                alert("¡Cuenta creada con éxito! Ahora puedes iniciar sesión.");
                 navigate("/login");
             } else {
+                // Muestra el mensaje de error que viene del backend (ej: "Correo ya registrado")
                 setError(data.msg || "Error al registrarse");
             }
         } catch (err) {
+            console.error("Error en la conexión:", err);
             setError("Error de conexión con el servidor");
         }
     };
@@ -74,7 +81,11 @@ export const Signup = () => {
                         required
                     />
                 </div>
-                {error && <div className="alert alert-danger p-2 small text-center">{error}</div>}
+                {error && (
+                    <div className="alert alert-danger p-2 small text-center">
+                        {error}
+                    </div>
+                )}
                 <button type="submit" className="btn btn-success w-100">Registrarse</button>
             </form>
         </div>

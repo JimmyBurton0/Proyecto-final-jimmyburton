@@ -1,52 +1,32 @@
-import React, { useEffect } from "react"
-import rigoImageUrl from "../assets/img/rigo-baby.jpg";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import React from "react";
 
 export const Home = () => {
+    // Intentamos obtener los datos del usuario que guardamos en el Login
+    const storedUser = localStorage.getItem("currentUser");
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
 
-	const { store, dispatch } = useGlobalReducer()
-
-	const loadMessage = async () => {
-		try {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL
-
-			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
-
-			const response = await fetch(backendUrl + "/api/hello")
-			const data = await response.json()
-
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
-
-			return data
-
-		} catch (error) {
-			if (error.message) throw new Error(
-				`Could not fetch the message from the backend.
-				Please check if the backend is running and the backend port is public.`
-			);
-		}
-
-	}
-
-	useEffect(() => {
-		loadMessage()
-	}, [])
-
-	return (
-		<div className="text-center mt-5">
-			<h1 className="display-4">Hello Rigo!!</h1>
-			<p className="lead">
-				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-			</p>
-			<div className="alert alert-info">
-				{store.message ? (
-					<span>{store.message}</span>
-				) : (
-					<span className="text-danger">
-						Loading message from the backend (make sure your python 🐍 backend is running)...
-					</span>
-				)}
-			</div>
-		</div>
-	);
-}; 
+    return (
+        <div className="container mt-5">
+            <div className="text-center border p-5 rounded bg-light shadow-sm">
+                <h1>Sistema de Gestión de Repuestos</h1>
+                <hr className="my-4" />
+                
+                {currentUser ? (
+                    <div>
+                        <h3>¡Bienvenido de nuevo, {currentUser.fullName}!</h3>
+                        <p className="lead">Has iniciado sesión correctamente.</p>
+                        <div className="mt-4">
+                            <button className="btn btn-primary me-2">Ver Inventario</button>
+                            <button className="btn btn-success">Agregar Repuesto</button>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <h3>Bienvenido al Sistema</h3>
+                        <p>Por favor, inicia sesión para gestionar tus datos.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};

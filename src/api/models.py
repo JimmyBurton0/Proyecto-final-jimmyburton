@@ -4,7 +4,7 @@ from datetime import datetime
 db = SQLAlchemy()
 
 class User(db.Model):
-    _tablename_ = 'user'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     fullName = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -12,36 +12,47 @@ class User(db.Model):
     roleId = db.Column(db.Integer, db.ForeignKey('role.id'))
     createdAt = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relación para acceder al nombre del rol fácilmente
+    # Relación para acceder al nombre del rol y al historial fácilmente
     role = db.relationship('Role', backref='users')
+    password_history = db.relationship('PasswordHistory', backref='user', lazy=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "fullName": self.fullName,
             "email": self.email,
-            "role": self.role.name if self.role else None, # Muestra 'comprador' en vez de 1
+            "role": self.role.name if self.role else None,
             "createdAt": self.createdAt
         }
 
+class PasswordHistory(db.Model):
+    __tablename__ = 'password_history'
+    id = db.Column(db.Integer, primary_key=True)
+    passwordHash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<PasswordHistory {self.id} for User {self.user_id}>'
+
 class Role(db.Model):
-    _tablename_ = 'role'
+    __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
-    def _repr_(self):
-        return self.name # Esto hace que en el Admin veas "comprador" en los menús
+    def __repr__(self):
+        return self.name 
 
 class Category(db.Model):
-    _tablename_ = 'category'
+    __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    def _repr_(self):
+    def __repr__(self):
         return self.name
 
 class Product(db.Model):
-    _tablename_ = 'product'
+    __tablename__ = 'product'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     brand = db.Column(db.String(100))
@@ -60,10 +71,8 @@ class Product(db.Model):
             "category": self.category.name if self.category else None
         }
 
-# ... (Las demás tablas Compatibility, Cart y CartItem se mantienen igual)
-
 class Compatibility(db.Model): 
-    _tablename_ = 'compatibility'
+    __tablename__ = 'compatibility'
     id = db.Column(db.Integer, primary_key=True)
     productId = db.Column(db.Integer, db.ForeignKey('product.id'))
     carBrand = db.Column(db.String(100))
@@ -72,12 +81,12 @@ class Compatibility(db.Model):
     yearEnd = db.Column(db.Integer)
 
 class Cart(db.Model):
-    _tablename_ = 'cart'
+    __tablename__ = 'cart'
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class CartItem(db.Model):
-    _tablename_ = 'cart_item'
+    __tablename__ = 'cart_item'
     id = db.Column(db.Integer, primary_key=True)
     cartId = db.Column(db.Integer, db.ForeignKey('cart.id'))
     productId = db.Column(db.Integer, db.ForeignKey('product.id'))

@@ -7,7 +7,7 @@ export const initialStore = () => {
   return {
     user: JSON.parse(localStorage.getItem("currentUser")) || null,
     token: localStorage.getItem("token") || null,
-    products: [], 
+    products: [],
     productDetail: null,
     cart: savedCart ? JSON.parse(savedCart) : [],
     exchangeRate: 36.50,
@@ -26,9 +26,16 @@ export default function storeReducer(store, action = {}) {
     case 'set_products':
       return { ...store, products: action.payload };
     case 'remove_product':
-      return { 
-        ...store, 
-        products: store.products.filter(item => item.id !== action.payload) 
+      return {
+        ...store,
+        products: store.products.filter(item => item.id !== action.payload)
+      };
+    case 'update_product':
+      return {
+        ...store,
+        products: store.products.map(item =>
+          item.id === action.payload.id ? action.payload : item
+        )
       };
     case 'add_to_cart':
       if (store.cart.find(item => item.id === action.payload.id)) return store;
@@ -54,58 +61,90 @@ export const injectContext = (PassedComponent) => {
     const baseUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "");
 
     const loadProducts = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/api/products`);
-            if (response.ok) {
-                const data = await response.json();
-                dispatch({ type: "set_products", payload: data });
-            }
-        } catch (error) {
-            console.error("Error cargando productos de la DB:", error);
+      try {
+        const response = await fetch(`${baseUrl}/api/products`);
+        if (response.ok) {
+          const data = await response.json();
+          dispatch({ type: "set_products", payload: data });
         }
+      } catch (error) {
+        console.error("Error cargando productos de la DB:", error);
+      }
     };
 
     const deleteProduct = async (id) => {
-        try {
-            if (!store.token) {
-                console.error("No hay un token disponible. Debes estar logueado.");
-                return false;
-            }
-
-            const response = await fetch(`${baseUrl}/api/products/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${store.token}`
-                }
-            });
-
-            if (response.ok) {
-                dispatch({ type: "remove_product", payload: id });
-                return true;
-            } else {
-                const errorData = await response.json();
-                console.error("Error del servidor:", errorData.msg || "No autorizado");
-                return false;
-            }
-        } catch (error) {
-            console.error("Error al eliminar el producto:", error);
-            return false;
+      try {
+        if (!store.token) {
+          console.error("No hay un token disponible. Debes estar logueado.");
+          return false;
         }
+
+        const response = await fetch(`${baseUrl}/api/products/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${store.token}`
+          }
+        });
+
+        if (response.ok) {
+          dispatch({ type: "remove_product", payload: id });
+          return true;
+        } else {
+          const errorData = await response.json();
+          console.error("Error del servidor:", errorData.msg || "No autorizado");
+          return false;
+        }
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+        return false;
+      }
+    };
+
+    const updateProduct = async (id, productData) => {
+      try {
+        if (!store.token) {
+          console.error("No hay un token disponible. Debes estar logueado.");
+          return false;
+        }
+
+        const response = await fetch(`${baseUrl}/api/products/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${store.token}`
+          },
+          body: JSON.stringify(productData)
+        });
+
+        if (response.ok) {
+          const updatedProduct = await response.json();
+          dispatch({ type: "update_product", payload: updatedProduct });
+          return true;
+        } else {
+          const errorData = await response.json();
+          console.error("Error del servidor:", errorData.msg || "No autorizado");
+          return false;
+        }
+      } catch (error) {
+        console.error("Error al actualizar el producto:", error);
+        return false;
+      }
     };
 
     useEffect(() => {
-        loadProducts();
+      loadProducts();
     }, []);
 
     return (
-      <Context.Provider value={{ 
-        store, 
-        dispatch, 
-        actions: { 
-            loadProducts,
-            deleteProduct 
-        } 
+      <Context.Provider value={{
+        store,
+        dispatch,
+        actions: {
+          loadProducts,
+          deleteProduct,
+          updateProduct
+        }
       }}>
         <PassedComponent {...props} />
       </Context.Provider>

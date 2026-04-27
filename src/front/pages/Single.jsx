@@ -1,37 +1,150 @@
-// Import necessary hooks and components from react-router-dom and other libraries.
-import { Link, useParams } from "react-router-dom";  // To use link for navigation and useParams to get URL parameters
-import PropTypes from "prop-types";  // To define prop types for this component
-import rigoImageUrl from "../assets/img/rigo-baby.jpg"  // Import an image asset
-import useGlobalReducer from "../hooks/useGlobalReducer";  // Import a custom hook for accessing the global state
+import { Link, useParams, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
-// Define and export the Single component which displays individual item details.
-export const Single = props => {
-  // Access the global state using the custom hook.
-  const { store } = useGlobalReducer()
+export const Single = () => {
+  const { store } = useGlobalReducer();
+  const { theId } = useParams();
+  const navigate = useNavigate();
 
-  // Retrieve the 'theId' URL parameter using useParams hook.
-  const { theId } = useParams()
-  const singleTodo = store.todos.find(todo => todo.id === parseInt(theId));
+  const product = store.products?.find(p => p.id === parseInt(theId));
+
+  if (!product) {
+    return (
+      <div className="container text-center py-5">
+        <div className="alert alert-warning" role="alert">
+          <i className="fa-solid fa-exclamation-triangle me-2"></i>
+          <strong>Producto no encontrado</strong>
+        </div>
+        <Link to="/" className="btn btn-primary mt-3">
+          <i className="fa-solid fa-arrow-left me-2"></i>Volver al inicio
+        </Link>
+      </div>
+    );
+  }
+
+  const isAdmin = store.user?.role?.toLowerCase() === 'administrador';
+
+  // Debug
+  console.log("Usuario actual:", store.user);
+  console.log("Rol del usuario:", store.user?.role);
+  console.log("¿Es Admin?", isAdmin);
 
   return (
-    <div className="container text-center">
-      {/* Display the title of the todo element dynamically retrieved from the store using theId. */}
-      <h1 className="display-4">Todo: {singleTodo?.title}</h1>
-      <hr className="my-4" />  {/* A horizontal rule for visual separation. */}
+    <div className="container py-5">
+      <div className="row">
+        <div className="col-md-8 mx-auto">
+          <div className="card border-0 shadow-lg">
+            <div className="card-body p-5">
+              {/* Header con botón volver */}
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="card-title fw-bold text-primary m-0">{product.name}</h2>
+                <button
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={() => navigate("/")}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
 
-      {/* A Link component acts as an anchor tag but is used for client-side routing to prevent page reloads. */}
-      <Link to="/">
-        <span className="btn btn-primary btn-lg" href="#" role="button">
-          Back home
-        </span>
-      </Link>
+              {/* Detalles del producto */}
+              <div className="row g-4 mb-4">
+                <div className="col-md-6">
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Marca</label>
+                    <p className="h5 fw-bold text-dark">{product.brand || "N/A"}</p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Categoría</label>
+                    <p className="h5 fw-bold">
+                      <span className="badge bg-primary">{product.category || "General"}</span>
+                    </p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Stock</label>
+                    <p className="h5 fw-bold">
+                      {product.stockQuantity > 0 ? (
+                        <span className="badge bg-success">{product.stockQuantity} disponibles</span>
+                      ) : (
+                        <span className="badge bg-danger">Sin stock</span>
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Precio</label>
+                    <p className="display-6 fw-bold text-success">${parseFloat(product.priceUsd).toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Tipo de Vehículo</label>
+                    <p className="h5 fw-bold text-dark">{product.vehicleType || "General"}</p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Condición</label>
+                    <p className="h5 fw-bold">
+                      <span className="badge bg-info">{product.condition || "nuevo"}</span>
+                    </p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Original</label>
+                    <p className="h5 fw-bold">
+                      {product.isOriginal ? (
+                        <span className="badge bg-success">Sí, Original</span>
+                      ) : (
+                        <span className="badge bg-secondary">Compatible</span>
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="detail-item mb-3">
+                    <label className="text-muted small text-uppercase fw-bold">Años Compatibles</label>
+                    <p className="h5 fw-bold text-dark">
+                      {product.yearStart && product.yearEnd
+                        ? `${product.yearStart} - ${product.yearEnd}`
+                        : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="d-flex gap-2 mt-5 pt-3 border-top">
+                <button
+                  className="btn btn-primary flex-grow-1 fw-bold py-2"
+                  onClick={() => navigate("/")}
+                >
+                  <i className="fa-solid fa-arrow-left me-2"></i>Volver
+                </button>
+
+                {isAdmin && (
+                  <button
+                    className="btn btn-warning flex-grow-1 fw-bold py-2"
+                    onClick={() => navigate(`/edit-product/${product.id}`)}
+                  >
+                    <i className="fa-solid fa-pen-to-square me-2"></i>Editar
+                  </button>
+                )}
+
+                <button
+                  className="btn btn-success flex-grow-1 fw-bold py-2"
+                  onClick={() => {
+                    // Aquí irá la lógica de añadir al carrito
+                    alert(`${product.name} añadido al carrito`);
+                  }}
+                >
+                  <i className="fa-solid fa-shopping-cart me-2"></i>Añadir al carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-// Use PropTypes to validate the props passed to this component, ensuring reliable behavior.
-Single.propTypes = {
-  // Although 'match' prop is defined here, it is not used in the component.
-  // Consider removing or using it as needed.
-  match: PropTypes.object
 };

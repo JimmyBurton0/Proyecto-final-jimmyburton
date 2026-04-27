@@ -6,11 +6,12 @@ import { Single } from "./pages/Single";
 import { Category } from "./pages/Category";
 import { Cart } from "./pages/Cart";
 import { AddProduct } from "./pages/AddProduct";
+import { EditProduct } from "./pages/EditProduct";
 import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { ResetPassword } from "./pages/ResetPassword";
-import { injectContext } from "./store.jsx"; 
+import { injectContext } from "./store.jsx";
 
 const AppRoutes = () => {
     const router = createBrowserRouter(
@@ -18,6 +19,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Layout />} errorElement={<div className="text-center py-5"><h1>Not found!</h1></div>}>
                 <Route index element={<Home />} />
                 <Route path="single/:theId" element={<Single />} />
+                <Route path="edit-product/:productId" element={<EditProduct />} />
                 <Route path="category/:categoryName" element={<Category />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="add-product" element={<AddProduct />} />

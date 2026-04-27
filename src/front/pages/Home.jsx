@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 export const Home = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
-    
+
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const searchQuery = queryParams.get("query") || "";
@@ -24,7 +24,7 @@ export const Home = () => {
         navigate(`/category/${normalizedName}`);
     };
 
-    const filteredProducts = store.products?.filter(product => 
+    const filteredProducts = store.products?.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 
@@ -37,14 +37,14 @@ export const Home = () => {
     const handleConfirmDelete = async (reason) => {
         if (productToDelete) {
             const success = await actions.deleteProduct(productToDelete.id);
-            
+
             if (success) {
                 console.log(`Producto "${productToDelete.name}" eliminado. Razón: ${reason}`);
             } else {
                 alert("No se pudo eliminar el repuesto. Verifica la conexión con el servidor.");
             }
         }
-        
+
         setShowModal(false);
         setProductToDelete(null);
     };
@@ -52,8 +52,8 @@ export const Home = () => {
     return (
         <div className="container-fluid bg-light min-vh-100 py-5">
             <div className="container">
-                
-                {}
+
+                { }
                 {!searchQuery && (
                     <>
                         <div className="d-flex align-items-center mb-4">
@@ -64,9 +64,9 @@ export const Home = () => {
                         <div className="row g-4 justify-content-center mb-5">
                             {categories.map((cat, index) => (
                                 <div key={index} className="col-6 col-md-4 col-lg-3">
-                                    <div 
+                                    <div
                                         className="card h-100 border-0 shadow-sm text-center p-4 bg-white"
-                                        onClick={() => handleNavigation(cat.name)} 
+                                        onClick={() => handleNavigation(cat.name)}
                                         style={{ cursor: "pointer", transition: "transform 0.2s" }}
                                         onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
                                         onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
@@ -82,7 +82,7 @@ export const Home = () => {
                     </>
                 )}
 
-                {}
+                { }
                 <div className="d-flex align-items-center mb-4 mt-4">
                     <h4 className="fw-bold text-dark me-3">
                         {searchQuery ? `Resultados para: "${searchQuery}"` : "Todos los Repuestos"}
@@ -90,7 +90,7 @@ export const Home = () => {
                     <div className="flex-grow-1 border-bottom"></div>
                 </div>
 
-                {}
+                { }
                 <div className="row g-4">
                     {filteredProducts.length > 0 ? (
                         filteredProducts.map((item) => (
@@ -101,12 +101,17 @@ export const Home = () => {
                                         <p className="card-text text-muted mb-1">Marca: <strong>{item.brand}</strong></p>
                                         <p className="card-text text-muted mb-1">Categoría: <span className="badge bg-light text-dark">{item.category || "General"}</span></p>
                                         <h4 className="fw-bold mt-3 text-success">${item.priceUsd}</h4>
-                                        
+
                                         {/* BOTONES ACCIÓN */}
                                         <div className="d-flex gap-2 mt-2">
-                                            <button className="btn btn-outline-primary flex-grow-1 fw-bold">Ver Detalles</button>
-                                            <button 
-                                                className="btn btn-outline-danger" 
+                                            <button
+                                                className="btn btn-outline-primary flex-grow-1 fw-bold"
+                                                onClick={() => navigate(`/single/${item.id}`)}
+                                            >
+                                                Ver Detalles
+                                            </button>
+                                            <button
+                                                className="btn btn-outline-danger"
                                                 onClick={() => askConfirmation(item)}
                                                 title="Eliminar"
                                             >
@@ -125,7 +130,7 @@ export const Home = () => {
                     )}
                 </div>
 
-                {}
+                { }
                 {!searchQuery && (
                     <div className="mt-5 pt-5 text-center text-muted">
                         <p className="lead">¿No encuentras lo que buscas? Regístrate para recibir notificaciones.</p>
@@ -136,7 +141,7 @@ export const Home = () => {
                 )}
             </div>
 
-            {}
+            { }
             {showModal && (
                 <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} tabIndex="-1">
                     <div className="modal-dialog modal-dialog-centered">

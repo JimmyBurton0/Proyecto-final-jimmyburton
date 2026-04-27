@@ -28,7 +28,6 @@ export const Home = () => {
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 
-    // LÓGICA DE BORRADO
     const askConfirmation = (product) => {
         setProductToDelete(product);
         setShowModal(true);
@@ -52,8 +51,6 @@ export const Home = () => {
     return (
         <div className="container-fluid bg-light min-vh-100 py-5">
             <div className="container">
-
-                { }
                 {!searchQuery && (
                     <>
                         <div className="d-flex align-items-center mb-4">
@@ -82,7 +79,6 @@ export const Home = () => {
                     </>
                 )}
 
-                { }
                 <div className="d-flex align-items-center mb-4 mt-4">
                     <h4 className="fw-bold text-dark me-3">
                         {searchQuery ? `Resultados para: "${searchQuery}"` : "Todos los Repuestos"}
@@ -90,7 +86,6 @@ export const Home = () => {
                     <div className="flex-grow-1 border-bottom"></div>
                 </div>
 
-                { }
                 <div className="row g-4">
                     {filteredProducts.length > 0 ? (
                         filteredProducts.map((item) => (
@@ -102,7 +97,6 @@ export const Home = () => {
                                         <p className="card-text text-muted mb-1">Categoría: <span className="badge bg-light text-dark">{item.category || "General"}</span></p>
                                         <h4 className="fw-bold mt-3 text-success">${item.priceUsd}</h4>
 
-                                        {/* BOTONES ACCIÓN */}
                                         <div className="d-flex gap-2 mt-2">
                                             <button
                                                 className="btn btn-outline-primary flex-grow-1 fw-bold"
@@ -141,7 +135,7 @@ export const Home = () => {
                 )}
             </div>
 
-            { }
+
             {showModal && (
                 <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} tabIndex="-1">
                     <div className="modal-dialog modal-dialog-centered">

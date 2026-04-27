@@ -25,7 +25,6 @@ export const EditProduct = () => {
     const [loading, setLoading] = useState(false);
     const [notFound, setNotFound] = useState(false);
 
-    // Cargar datos del producto cuando esté disponible
     useEffect(() => {
         if (product) {
             setFormData({
@@ -134,7 +133,6 @@ export const EditProduct = () => {
                             <i className="fa-solid fa-pen-to-square me-2"></i>Editar Repuesto
                         </h2>
                         <form onSubmit={handleSubmit}>
-
                             <div className="mb-3">
                                 <label className="form-label fw-bold small text-secondary">NOMBRE DEL REPUESTO</label>
                                 <input

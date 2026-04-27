@@ -24,18 +24,12 @@ export const Single = () => {
 
   const isAdmin = store.user?.role?.toLowerCase() === 'administrador';
 
-  // Debug
-  console.log("Usuario actual:", store.user);
-  console.log("Rol del usuario:", store.user?.role);
-  console.log("¿Es Admin?", isAdmin);
-
   return (
     <div className="container py-5">
       <div className="row">
         <div className="col-md-8 mx-auto">
           <div className="card border-0 shadow-lg">
             <div className="card-body p-5">
-              {/* Header con botón volver */}
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="card-title fw-bold text-primary m-0">{product.name}</h2>
                 <button
@@ -46,7 +40,6 @@ export const Single = () => {
                 </button>
               </div>
 
-              {/* Detalles del producto */}
               <div className="row g-4 mb-4">
                 <div className="col-md-6">
                   <div className="detail-item mb-3">
@@ -113,7 +106,6 @@ export const Single = () => {
                 </div>
               </div>
 
-              {/* Botones de acción */}
               <div className="d-flex gap-2 mt-5 pt-3 border-top">
                 <button
                   className="btn btn-primary flex-grow-1 fw-bold py-2"
@@ -134,7 +126,6 @@ export const Single = () => {
                 <button
                   className="btn btn-success flex-grow-1 fw-bold py-2"
                   onClick={() => {
-                    // Aquí irá la lógica de añadir al carrito
                     alert(`${product.name} añadido al carrito`);
                   }}
                 >

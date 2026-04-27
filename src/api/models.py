@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -10,11 +10,11 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     passwordHash = db.Column(db.String(255), nullable=False)
     roleId = db.Column(db.Integer, db.ForeignKey('role.id'))
-    createdAt = db.Column(db.DateTime, default=datetime.utcnow)
+    createdAt = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relación para acceder al nombre del rol y al historial fácilmente
     role = db.relationship('Role', backref='users')
     password_history = db.relationship('PasswordHistory', backref='user', lazy=True)
+    products = db.relationship('Product', backref='seller', lazy=True)
 
     def serialize(self):
         return {
@@ -29,19 +29,13 @@ class PasswordHistory(db.Model):
     __tablename__ = 'password_history'
     id = db.Column(db.Integer, primary_key=True)
     passwordHash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f'<PasswordHistory {self.id} for User {self.user_id}>'
 
 class Role(db.Model):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-
-    def __repr__(self):
-        return self.name 
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -56,10 +50,16 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     brand = db.Column(db.String(100))
-    priceUsd = db.Column(db.Numeric(10, 2), nullable=False)
+    priceUsd = db.Column(db.Numeric(10, 2), nullable=False) 
     stockQuantity = db.Column(db.Integer, default=0)
     categoryId = db.Column(db.Integer, db.ForeignKey('category.id'))
-    
+    yearStart = db.Column(db.Integer)
+    yearEnd = db.Column(db.Integer)
+    vehicleType = db.Column(db.String(50), default="carro")
+    isOriginal = db.Column(db.Boolean(), default=False)
+    condition = db.Column(db.String(50), default="nuevo")
+    sellerId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     category = db.relationship('Category', backref='products')
 
     def serialize(self):
@@ -67,8 +67,16 @@ class Product(db.Model):
             "id": self.id,
             "name": self.name,
             "brand": self.brand,
-            "price": str(self.priceUsd),
-            "category": self.category.name if self.category else None
+            "priceUsd": str(self.priceUsd),
+            "stockQuantity": self.stockQuantity,
+            "category": self.category.name if self.category else None,
+            "categoryId": self.categoryId,
+            "yearStart": self.yearStart,
+            "yearEnd": self.yearEnd,
+            "vehicleType": self.vehicleType,
+            "isOriginal": self.isOriginal,
+            "condition": self.condition,
+            "sellerId": self.sellerId
         }
 
 class Compatibility(db.Model): 

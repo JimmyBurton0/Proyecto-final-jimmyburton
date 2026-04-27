@@ -1,32 +1,35 @@
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    Route,
-} from "react-router-dom";
+import React from "react";
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
-import { Signup } from "./pages/Signup.jsx";
-import { Login } from "./pages/Login.jsx";
-import { ForgotPassword } from "./pages/ForgotPassword.jsx"; // Importación para H-5
-import { ResetPassword } from "./pages/ResetPassword.jsx";   // Importación para H-6
+import { Category } from "./pages/Category";
+import { Cart } from "./pages/Cart";
+import { AddProduct } from "./pages/AddProduct";
+import { Signup } from "./pages/Signup";
+import { Login } from "./pages/Login";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
+import { injectContext } from "./store.jsx"; 
 
-export const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
+const AppRoutes = () => {
+    const router = createBrowserRouter(
+        createRoutesFromElements(
+            <Route path="/" element={<Layout />} errorElement={<div className="text-center py-5"><h1>Not found!</h1></div>}>
+                <Route index element={<Home />} />
+                <Route path="single/:theId" element={<Single />} />
+                <Route path="category/:categoryName" element={<Category />} />
+                <Route path="cart" element={<Cart />} />
+                <Route path="add-product" element={<AddProduct />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="login" element={<Login />} />
+                <Route path="forgot" element={<ForgotPassword />} />
+                <Route path="reset" element={<ResetPassword />} />
+            </Route>
+        )
+    );
 
-        <Route path= "/" element={<Home />} />
-        <Route path="/single/:theId" element={ <Single />} />
-        <Route path="/demo" element={<Demo />} />
-        
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+    return <RouterProvider router={router} />;
+};
 
-        {/* Nuevas rutas para la recuperación de contraseña */}
-        <Route path="/forgot" element={<ForgotPassword />} />
-        <Route path="/reset" element={<ResetPassword />} />
-
-      </Route>
-    )
-);
+export default injectContext(AppRoutes);
